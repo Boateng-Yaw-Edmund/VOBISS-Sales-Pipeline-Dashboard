@@ -211,9 +211,11 @@ fig1 = px.bar(
     x="Issue Type",
     y="Count",
     color="Issue Type",
-    title="Coordinate Issue Distribution"
+    title="Coordinate Issue Distribution",
+    text="Count"
 )
-
+#fig1.update_traces(textposition="outside")
+fig1.update_layout(uniformtext_minsize=8, uniformtext_mode="hide")
 st.plotly_chart(fig1, use_container_width=True)
 st.dataframe(coord_summary, use_container_width=True)
 
@@ -237,9 +239,11 @@ fig2 = px.bar(
     x="Issue Type",
     y="Count",
     color="Issue Type",
-    title="Business Data Issues"
+    title="Business Data Issues",
+    text="Count"
 )
-
+#fig2.update_traces(textposition="outside")
+fig2.update_layout(uniformtext_minsize=8, uniformtext_mode="hide")
 st.plotly_chart(fig2, use_container_width=True)
 st.dataframe(data_issue_summary, use_container_width=True)
 

@@ -520,19 +520,32 @@ with tab3:
         stage_dist,
         x="stage_name",
         y="deal_count",
-        title="Deal Distribution by Stage"
+        title="Deal Distribution by Stage",
+        text="deal_count"
     )
+    fig1.update_traces(textposition="outside")
+    fig1.update_layout(uniformtext_minsize=8, uniformtext_mode="hide")
+
 
     st.plotly_chart(fig1, use_container_width=True)
 
+    stage_dist["total_revenue_M"] = stage_dist["total_revenue"] / 1_000_000
   #revenue distribution by stage
     fig2 = px.bar(
         stage_dist,
         x="stage_name",
-        y="total_revenue",
-        title="Revenue Distribution by Stage"
+        y="total_revenue_M",
+        title="Revenue Distribution by Stage",
+        text="total_revenue_M"
     )
-
+    fig2.update_traces(texttemplate="GHS %{text:.2f}M",textposition="outside")
+    fig2.update_layout(
+            yaxis_title="Revenue (Millions GHS)",
+            xaxis_title="Stage Name",
+            showlegend=False,
+            uniformtext_minsize=8,
+            uniformtext_mode="hide"
+    )
     st.plotly_chart(fig2, use_container_width=True)
 
     #insights

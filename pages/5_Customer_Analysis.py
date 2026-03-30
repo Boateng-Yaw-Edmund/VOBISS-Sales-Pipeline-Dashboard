@@ -278,15 +278,17 @@ with tab1:
     # ================================
     # VISUAL: CUSTOMER REVENUE
     # ================================
-
+    top_customers["total_revenue_M"] = top_customers["total_revenue"] / 1_000_000
     fig = px.bar(
         top_customers,
         x="customer",
-        y="total_revenue",
+        y="total_revenue_M",
         color="customer",
-        title="Top Customers by Revenue"
+        title="Top Customers by Revenue",
+        text="total_revenue_M"
     )
-
+    fig.update_traces(texttemplate="GHS %{text:.2f}M")
+    fig.update_layout(uniformtext_minsize=8, uniformtext_mode="hide")
     st.plotly_chart(fig, use_container_width=True)
 
     # ================================
@@ -412,7 +414,8 @@ with tab2:
         monthly_trend,
         x="year_month",
         y="deals",
-        title="Number of Deals per Month"
+        title="Number of Deals per Month",
+            text="deals"
     )
 
     st.plotly_chart(fig_vol, use_container_width=True)

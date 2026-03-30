@@ -196,8 +196,8 @@ with tab1:
     )
 
     fig_service.update_traces(
-        texttemplate="GHS %{text:,.0f}",  
-        textposition="outside"
+        texttemplate="GHS %{text:,.0f}"  
+        #textposition="outside"
     )
 
     fig_service.update_layout(
@@ -309,8 +309,8 @@ with tab2:
         text="Revenue_M" 
     )
     fig_manager.update_traces(
-        texttemplate="GHS %{text:.2f}M", 
-        textposition="outside"
+        texttemplate="GHS %{text:.2f}M"
+        #textposition="outside"
     )
 
     fig_manager.update_layout(
