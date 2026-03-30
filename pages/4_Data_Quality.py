@@ -111,9 +111,9 @@ filtered_df, filtered_time_df = apply_filters(
     max_dist=max_dist
 )
 
-# ================================
-# DATA QUALITY LOGIC
-# ================================
+# data quality analysis will be performed on filtered_df to ensure all metrics reflect the current view
+# of the data after user-applied filters. This ensures that the data quality insights are relevant and 
+# actionable based on the user's specific focus areas.
 
 df = filtered_df.copy()
 
@@ -126,9 +126,7 @@ df["Probability"] = pd.to_numeric(df["Probability"], errors="coerce")
 df["payback_months"] = pd.to_numeric(df["payback_months"], errors="coerce")
 
 
-# ================================
-# COORDINATE QUALITY RULES
-# ================================
+# coordinate validation
 
 missing_coords = df["lat_final"].isna() | df["lon_final"].isna()
 
@@ -150,9 +148,7 @@ df.loc[invalid_coords, "coord_issue"] = "Invalid"
 df.loc[out_of_bounds, "coord_issue"] = "Out of Bounds"
 
 
-# ================================
-# BUSINESS DATA QUALITY RULES
-# ================================
+# business data validation
 
 df["data_issue"] = "Clean"
 
@@ -163,9 +159,7 @@ df.loc[df["Probability"].isna(), "data_issue"] = "Missing Probability"
 df.loc[df["payback_months"] <= 0, "data_issue"] = "Invalid Payback"
 
 
-# ================================
-# SUMMARY METRICS (FILTER-AWARE)
-# ================================
+#summary metrics
 
 total_records = len(df)
 
@@ -178,9 +172,7 @@ invalid_pct = 100 - valid_pct
 data_reliability_score = valid_pct
 
 
-# ================================
-# KPI DISPLAY
-# ================================
+# kpi
 
 st.subheader("Data Quality Overview")
 
@@ -192,9 +184,7 @@ col3.metric("Invalid Coordinates (%)", f"{invalid_pct:.1f}%")
 col4.metric("Data Reliability Score", f"{data_reliability_score:.1f}%")
 
 
-# ================================
-# COORDINATE ISSUE BREAKDOWN
-# ================================
+# coordinate issues breakdown
 
 st.subheader("Coordinate Issues Breakdown")
 
@@ -220,9 +210,7 @@ st.plotly_chart(fig1, use_container_width=True)
 st.dataframe(coord_summary, use_container_width=True)
 
 
-# ================================
-# DATA ISSUE BREAKDOWN
-# ================================
+# data issues breakdown
 
 st.subheader("Business Data Issues")
 
@@ -248,9 +236,7 @@ st.plotly_chart(fig2, use_container_width=True)
 st.dataframe(data_issue_summary, use_container_width=True)
 
 
-# ================================
-# PROBLEM RECORDS
-# ================================
+# problem records table
 
 st.subheader("Flagged Problem Records")
 
@@ -280,9 +266,7 @@ st.dataframe(
 )
 
 
-# ================================
-# DOWNLOAD FOR ENGINEERING TEAM
-# ================================
+# download button for problem records
 
 st.download_button(
     label="⬇️ Download Problem Records",
@@ -292,9 +276,7 @@ st.download_button(
 )
 
 
-# ================================
-# EXECUTIVE INTERPRETATION
-# ================================
+# explanation of implications
 
 st.subheader("What This Means")
 
@@ -312,9 +294,7 @@ else:
     )
 
 
-# ================================
-# ENGINEERING ACTION BLOCK
-# ================================
+# engineering recommendations
 
 st.subheader("Recommended Actions")
 

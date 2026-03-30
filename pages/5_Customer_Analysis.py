@@ -124,9 +124,7 @@ df = df.rename(columns={
     "ISP": "customer"
 })
 
-# ================================
-# CUSTOMER AGGREGATION
-# ================================
+# customer-level aggregation
 
 customer_df = df.groupby("customer").agg(
     total_revenue=("expected_revenue", "sum"),
@@ -144,9 +142,7 @@ customer_df["efficiency"] = (
 # Ranking
 customer_df["rank"] = customer_df["total_revenue"].rank(ascending=False)
 
-# ================================
-# MoM CALCULATIONS (FIXED)
-# ================================
+# MoM change (will be calculated later with time data)
 
 df_time = filtered_df.copy()
 
@@ -191,9 +187,7 @@ monthly_perf["deals_mom_pct"] = monthly_perf.apply(
 latest = monthly_perf.iloc[-1]
 
 
-# ================================
-# KPI SECTION
-# ================================
+# Kpis
 
 st.subheader("Customer Overview")
 
@@ -213,9 +207,7 @@ tab1, tab2 = st.tabs([
     ])
 
 with tab1:
-    # ================================
-    # 🎯 TOP CUSTOMERS TO FOCUS ON
-    # ================================
+    # top customers to focus on
 
     st.subheader("Customers to Focus On")
 
@@ -234,9 +226,7 @@ with tab1:
             f"with strong efficiency. Prioritize for expansion and upselling."
         )
 
-    # ================================
-    # ⚠️ CUSTOMERS TO WATCH
-    # ================================
+    # customers requiring attention
 
     st.subheader("Customers Requiring Attention")
 
@@ -249,9 +239,7 @@ with tab1:
             f"{row['customer']} → Low efficiency despite revenue. Review deal structure or reduce resource allocation."
         )
 
-    # ================================
-    # TOP CUSTOMERS
-    # ================================
+    # top customers table
 
     st.subheader("Top Customers by Revenue")
 
@@ -261,9 +249,7 @@ with tab1:
 
     st.dataframe(top_customers, use_container_width=True)
 
-    # ================================
-    # CUSTOMER CONCENTRATION
-    # ================================
+    # customer concentration
 
     total_revenue = customer_df["total_revenue"].sum()
     top_5_revenue = top_customers.head(5)["total_revenue"].sum()
@@ -275,9 +261,7 @@ with tab1:
         f"{concentration_pct:.1f}% of Revenue"
     )
 
-    # ================================
-    # VISUAL: CUSTOMER REVENUE
-    # ================================
+    # customer revenue bar chart
     top_customers["total_revenue_M"] = top_customers["total_revenue"] / 1_000_000
     fig = px.bar(
         top_customers,
@@ -291,9 +275,7 @@ with tab1:
     fig.update_layout(uniformtext_minsize=8, uniformtext_mode="hide")
     st.plotly_chart(fig, use_container_width=True)
 
-    # ================================
-    # CUSTOMER EFFICIENCY SCATTER
-    # ================================
+    # customer efficiency scatter
 
     fig2 = px.scatter(
         customer_df,
@@ -307,11 +289,9 @@ with tab1:
 
     st.plotly_chart(fig2, use_container_width=True)
 
-    # ================================
-    # UNDERPERFORMING CUSTOMERS
-    # ================================
+    # underperforming customers
 
-    st.subheader("⚠️ Underperforming Customers")
+    st.subheader("Underperforming Customers")
 
     low_perf = customer_df[
         customer_df["efficiency"] < customer_df["efficiency"].median()
@@ -319,11 +299,9 @@ with tab1:
 
     st.dataframe(low_perf.head(10), use_container_width=True)
 
-    # ================================
-    # INSIGHT BLOCK
-    # ================================
+    # insights and recommendations
 
-    st.subheader("📌 What This Means")
+    st.subheader("What This Means")
 
     if concentration_pct > 60:
         st.warning(
@@ -345,9 +323,7 @@ with tab1:
 
 with tab2:
 
-    # ================================
-    # TIME PREPARATION (USE FILTERED DATA)
-    # ================================
+    # time preparation
 
     df_time = filtered_df.copy()
 
@@ -356,9 +332,7 @@ with tab2:
 
     df_time["year_month"] = df_time["date"].dt.to_period("M").astype(str)
 
-    # ================================
-    # MONTHLY PIPELINE TREND (GLOBAL)
-    # ================================
+    # monthly pipeline trend
 
     df_time = df_time.rename(columns={
     "Site[End User]": "deal_name"
@@ -381,9 +355,7 @@ with tab2:
 
     st.plotly_chart(fig0, use_container_width=True)
 
-    # ------------------------------
-    # Growth Logic (FIXED)
-    # ------------------------------
+    # growth logic
 
     monthly_trend["prev_revenue"] = monthly_trend["revenue"].shift(1)
 
@@ -404,10 +376,7 @@ with tab2:
         else:
             st.success("Revenue is growing steadily.")
 
-    # ================================
-    # DEAL VOLUME TREND
-    # ================================
-
+    # deal volume trend
     st.subheader("Monthly Deal Volume")
 
     fig_vol = px.bar(
@@ -420,12 +389,7 @@ with tab2:
 
     st.plotly_chart(fig_vol, use_container_width=True)
 
-    # ================================
-    # CUSTOMER REVENUE TREND
-    # ================================
-    # ================================
-    # CUSTOMER TREND (ROBUST VERSION)
-    # ================================
+    # customer performance over time
 
     # Detect correct column
     customer_col = "customer" if "customer" in df_time.columns else "ISP"
@@ -461,9 +425,7 @@ with tab2:
 
     st.plotly_chart(fig, use_container_width=True)
 
-    # ------------------------------
-    # SMART CHANGE DETECTION (FIXED)
-    # ------------------------------
+    # smart change detection
 
     customer_view["prev_revenue"] = customer_view["revenue"].shift(1)
 
@@ -486,9 +448,7 @@ with tab2:
         else:
             st.info("Customer revenue is relatively stable.")
 
-    # ================================
-    # TOP CUSTOMERS TREND
-    # ================================
+    # top customers trend comparison
 
     st.subheader("Top Customers Trend Comparison")
 
@@ -520,9 +480,7 @@ with tab2:
 
     st.plotly_chart(fig2, use_container_width=True)
 
-    # ================================
-    # CUSTOMER STABILITY (ADVANCED)
-    # ================================
+    # customer concentration over time
 
     #st.subheader("Customer Revenue Stability")
 

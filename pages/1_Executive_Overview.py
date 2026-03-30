@@ -463,9 +463,7 @@ with tab3:
 
     df_funnel = filtered_df.copy()
 
-    # -----------------------------
-    # STAGE ORDERING
-    # -----------------------------
+    # stage ordering based on numeric extraction from stage names
     df_funnel["stage_order"] = (
         df_funnel["Current Period Stage"]
         .str.extract(r"(\d+)")
@@ -530,7 +528,7 @@ with tab3:
     st.plotly_chart(fig1, use_container_width=True)
 
     stage_dist["total_revenue_M"] = stage_dist["total_revenue"] / 1_000_000
-  #revenue distribution by stage
+    #revenue distribution by stage
     fig2 = px.bar(
         stage_dist,
         x="stage_name",

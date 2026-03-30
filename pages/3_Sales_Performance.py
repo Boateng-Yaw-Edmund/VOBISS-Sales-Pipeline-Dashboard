@@ -12,8 +12,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# BANDWIDTH PREP
-# -----------------------------
+#bandwidth processing
 df["Bandwidth (MBPS)"] = pd.to_numeric(
     df["Bandwidth (MBPS)"], errors="coerce"
 ).fillna(0)
@@ -99,9 +98,7 @@ if bandwidth_filter:
         filtered_df["bandwidth_band"].isin(bandwidth_filter)
     ]
 
-# ================================
-# MoM CALCULATIONS (FIXED)
-# ================================
+#MoM calculations
 
 df_time = filtered_df.copy()
 
@@ -323,9 +320,7 @@ with tab2:
 
     st.plotly_chart(fig_manager, use_container_width=True)
 
-    # -----------------------------
-    # MANAGER AGGREGATION
-    # -----------------------------
+    # manager performance combining revenue and deal quality
     manager_perf = (
         filtered_df.groupby("Account Manager")
         .agg(
@@ -338,9 +333,7 @@ with tab2:
         .reset_index()
     )
 
-    # -----------------------------
-    # NORMALIZATION (SAFE)
-    # -----------------------------
+    # normalization
     def normalize(series):
         if series.max() == series.min():
             return pd.Series([0.5] * len(series))
@@ -349,25 +342,17 @@ with tab2:
     manager_perf["rev_norm"] = normalize(manager_perf["total_revenue"])
     manager_perf["score_norm"] = normalize(manager_perf["avg_score"])
 
-    # -----------------------------
-    # COMBINED SCORE
-    # -----------------------------
+    # combined score (weighted)
     manager_perf["manager_score"] = (
         manager_perf["rev_norm"] * 0.6 +
         manager_perf["score_norm"] * 0.4
     )
 
     manager_perf = manager_perf.sort_values(by="manager_score", ascending=False)
-
-    # -----------------------------
-    # DISPLAY TABLE
-    # -----------------------------
     st.subheader("Manager Performance (Revenue + Quality)")
     st.dataframe(manager_perf)
 
-    # -----------------------------
-    # TOP vs WORST
-    # -----------------------------
+    # top vs bottom manager analysis
     top_manager = manager_perf.iloc[0]["Account Manager"]
     worst_manager = manager_perf.iloc[-1]["Account Manager"]
 
@@ -382,9 +367,8 @@ with tab2:
         f"{worst_manager} delivers lower-quality deals and/or weaker revenue impact, indicating inefficiencies in deal structuring."
     )
 
-    # -----------------------------
-    # WHY ANALYSIS (CRITICAL)
-    # -----------------------------
+
+    # WHY ANALYSIS - KEY DRIVERS
     st.markdown("### Key Driver Comparison")
 
     comparison = pd.DataFrame({
@@ -409,9 +393,7 @@ with tab2:
             f"{worst_manager} has a significantly higher proportion of risky deals, which is likely driving lower overall performance."
         )
 
-    # -----------------------------
-    # SCATTER PLOT
-    # -----------------------------
+    # scatter plot of revenue vs quality
     st.markdown("### Manager Performance: Revenue vs Deal Quality")
 
     st.caption(
