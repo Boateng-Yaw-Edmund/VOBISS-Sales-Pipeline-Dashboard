@@ -37,6 +37,38 @@ def format_currency(value):
 #prepare base for filters
 df_ui = prepare_base(df)
 
+st.markdown("""
+<style>
+
+/* Reduce overall padding */
+.block-container {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+/* KPI metric styling */
+[data-testid="stMetricValue"] {
+    font-size: 20px !important;
+    font-weight: 600;
+}
+
+[data-testid="stMetricLabel"] {
+    font-size: 12px !important;
+}
+
+/* Reduce column spacing */
+div[data-testid="column"] {
+    padding: 0.2rem;
+}
+
+/* Reduce header spacing */
+h1, h2, h3 {
+    margin-bottom: 0.5rem;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 st.sidebar.header("Filters")
 
 #sliders
@@ -48,7 +80,7 @@ min_rev, max_rev = st.sidebar.slider(
 )
 
 st.sidebar.caption(
-    f"Selected: {format_currency(min_rev)} → {format_currency(max_rev)}"
+    f"Selected: {format_currency(min_rev)} -> {format_currency(max_rev)}"
 )
 
 min_dist, max_dist = st.sidebar.slider(
@@ -59,7 +91,7 @@ min_dist, max_dist = st.sidebar.slider(
 )
 
 st.sidebar.caption(
-    f"Selected: {format_currency(min_dist)}m → {format_currency(max_dist)}m"
+    f"Selected: {format_currency(min_dist)}m -> {format_currency(max_dist)}m"
 )
 
 #region filter
@@ -112,11 +144,11 @@ filtered_df, filtered_time_df = apply_filters(
 
 
 #kpi metrics
-col1, col2, col3, col4, col5, col6 = st.columns(6)
+col1, col2, col3, col4 = st.columns(4)
 
 total_revenue = filtered_df["TCV (GHS)"].sum()
 expected_revenue = filtered_df["expected_revenue"].sum()
-
+#first row of metrics
 col1.metric("Revenue", f"GHS {format_currency(filtered_df['TCV (GHS)'].sum())}")
 col2.metric("Expected Revenue", f"GHS {format_currency(filtered_df['expected_revenue'].sum())}")
 value = filtered_df["revenue_per_meter"].mean()
@@ -126,6 +158,9 @@ col3.metric(
     f"GHS {value:,.0f}/m"
 )
 col4.metric("Avg Payback Months", f"{filtered_df['payback_months'].mean():.1f}")
+
+#second row of metrics
+col5, col6, col7 = st.columns(3)
 col5.metric("Mapped %", f"{filtered_df['lat_final'].notna().mean()*100:.1f}%")
 
 top_region = (

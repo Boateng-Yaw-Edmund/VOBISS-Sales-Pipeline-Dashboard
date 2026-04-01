@@ -12,6 +12,38 @@ st.set_page_config(
     layout="wide"
 )
 
+st.markdown("""
+<style>
+
+/* Reduce overall padding */
+.block-container {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+/* KPI metric styling */
+[data-testid="stMetricValue"] {
+    font-size: 20px !important;
+    font-weight: 600;
+}
+
+[data-testid="stMetricLabel"] {
+    font-size: 12px !important;
+}
+
+/* Reduce column spacing */
+div[data-testid="column"] {
+    padding: 0.2rem;
+}
+
+/* Reduce header spacing */
+h1, h2, h3 {
+    margin-bottom: 0.5rem;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 #bandwidth processing
 df["Bandwidth (MBPS)"] = pd.to_numeric(
     df["Bandwidth (MBPS)"], errors="coerce"
@@ -157,12 +189,15 @@ def format_currency(value):
         return f"{value:.0f}"
 
 #kpi metrics
-col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
+col1, col2, col3, col4 = st.columns(4)
 
 col1.metric("Total Revenue", f"GHS {format_currency(filtered_df['TCV (GHS)'].sum())}")
 col2.metric("Expected Revenue", f"GHS {format_currency(filtered_df['expected_revenue'].sum())}")
 col3.metric("Avg Deal Size", f"GHS {format_currency(filtered_df['TCV (GHS)'].mean())}")
 col4.metric("Rev / Mbps", f"{format_currency(filtered_df['revenue_per_mbps'].mean())}")
+
+#second row of metrics
+col5, col6, col7 = st.columns(3)
 col5.metric("Payback (Months)", f"{filtered_df['payback_months'].mean():.1f}")
 col6.metric("MoM Revenue Change", f"{latest['revenue_mom_pct']:.1f}%")
 col7.metric("MoM Deal Change", f"{latest['deals_mom_pct']:.1f}%")

@@ -38,7 +38,56 @@ def format_currency(value):
     else:
         return f"{value:.0f}"
 
+st.markdown("""
+<style>
+.decision-box {
+    height: 120px;
+    padding: 16px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+}
+.green-box { background-color: #163d2b; color: #6ee7b7; }
+.yellow-box { background-color: #3d3a16; color: #fde68a; }
+.blue-box { background-color: #16263d; color: #93c5fd; }
+</style>
+""", unsafe_allow_html=True)
 
+st.markdown("""
+<style>
+
+/* Reduce overall padding */
+.block-container {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+/* KPI metric styling */
+[data-testid="stMetricValue"] {
+    font-size: 20px !important;
+    font-weight: 600;
+}
+
+[data-testid="stMetricLabel"] {
+    font-size: 12px !important;
+}
+
+/* Reduce column spacing */
+div[data-testid="column"] {
+    padding: 0.2rem;
+}
+
+/* Reduce header spacing */
+h1, h2, h3 {
+    margin-bottom: 0.5rem;
+}
+
+</style>
+""", unsafe_allow_html=True)
 
 #sliders
 min_rev, max_rev = st.sidebar.slider(
@@ -49,7 +98,7 @@ min_rev, max_rev = st.sidebar.slider(
 )
 
 st.sidebar.caption(
-    f"Selected: {format_currency(min_rev)} → {format_currency(max_rev)}"
+    f"Selected: {format_currency(min_rev)} -> {format_currency(max_rev)}"
 )
 
 min_dist, max_dist = st.sidebar.slider(
@@ -60,7 +109,7 @@ min_dist, max_dist = st.sidebar.slider(
 )
 
 st.sidebar.caption(
-    f"Selected: {format_currency(min_dist)}m → {format_currency(max_dist)}m"
+    f"Selected: {format_currency(min_dist)}m -> {format_currency(max_dist)}m"
 )
 
 #region filter
@@ -116,12 +165,17 @@ risky_pct = (filtered_df["deal_category"] == "High Risk").mean() * 100
 
 
 
-col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
+col1, col2, col3, col4 = st.columns(4)
 
+#first row of metrics
 col1.metric("Total Pipeline Value", f"GHS {format_currency(total_pipeline)}")
 col2.metric("Expected Revenue", f"GHS {format_currency(expected_revenue)}")
 col3.metric("Avg Payback Months", f"{avg_payback:.1f}")
 col4.metric("Deal Count", deal_count)
+
+
+col5, col6, col7 = st.columns(3)
+#second row of metrics
 col5.metric("Deals Missing Timeline (%)", f"{missing_pct:.1f}%")
 col6.metric("High Quality Deals (%)", f"{high_quality_pct:.1f}%")
 col7.metric("Risky Deals (%)", f"{risky_pct:.1f}%")
@@ -201,20 +255,34 @@ misalloc_pct = (
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.success(
-        f"Top 20% of deals contribute {contribution_pct:.1f}% of expected revenue"
+    st.markdown(
+        f"""
+        <div class="decision-box green-box">
+        Top 20% of deals contribute {contribution_pct:.1f}% of expected revenue
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
 with col2:
-    st.warning(
-        f"{worst_stage['Current Period Stage']} stage shows the highest leakage. Reduce deal volume entering this stage or improve conversion efficiency to prevent value erosion."
+    st.markdown(
+        f"""
+        <div class="decision-box yellow-box">
+        {worst_stage['Current Period Stage']} stage has highest leakage. Improve conversion efficiency
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
 with col3:
-    st.info(
-        f"{misalloc_pct:.1f}% of high-value deals are inefficient. Reallocate focus to higher-efficiency opportunities."
+    st.markdown(
+        f"""
+        <div class="decision-box blue-box">
+        {misalloc_pct:.1f}% of high-value deals are inefficient. Reallocate to better opportunities
+        </div>
+        """,
+        unsafe_allow_html=True
     )
-
 st.divider()
 
 tab1, tab2, tab3 = st.tabs([
